@@ -42,3 +42,44 @@ try:
 except Exception as e:
     print('DIAGNOSTIC_ERROR:', type(e).__name__, str(e)[:300])
     raise
+print("\n=== PAGE CONTENT CHECK ===")
+import urllib.request
+from html.parser import HTMLParser
+
+class TextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self.skip = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style"):
+            self.skip += 1
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style"):
+            self.skip = max(0, self.skip - 1)
+
+    def handle_data(self, data):
+        if not self.skip and data.strip():
+            self.parts.append(data.strip())
+
+url = "https://www.korail.com/tour/themeTravel/areaThemes/all"
+
+try:
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "Mozilla/5.0"}
+    )
+    with urllib.request.urlopen(req, timeout=20) as res:
+        raw = res.read(300000)
+        print("FINAL_URL:", res.geturl())
+        print("CONTENT_TYPE:", res.headers.get("Content-Type"))
+        print("STATUS:", res.status)
+
+    parser = TextExtractor()
+    parser.feed(raw.decode("utf-8", errors="replace"))
+    print("VISIBLE_TEXT:", " | ".join(parser.parts)[:2500])
+except Exception as e:
+    print("PAGE_CHECK_ERROR:", type(e).__name__, str(e)[:300])
+
+print("=== PAGE CONTENT CHECK END ===")
