@@ -72,6 +72,7 @@ def sync(html=None):
             if res.status != 200: raise RuntimeError(f'HTTP {res.status}')
             if 'html' not in res.headers.get('Content-Type','').lower(): raise RuntimeError('Not HTML')
             html=res.read(2_000_001).decode('utf-8','replace')
+            print("DIAG:", "URL=", URL, "HTML_LENGTH=", len(html), "TITLE=", BeautifulSoup(html, "html.parser").title.get_text(" ", strip=True)[:150] if BeautifulSoup(html, "html.parser").title else "NO_TITLE", "PRICE_MARKERS=", html.count("원"))
             if len(html)>2_000_000: raise RuntimeError('Response too large')
     products=parse(html)
     if len(products)<3: raise RuntimeError(f'Only {len(products)} recognizable cards: preserving old data')
