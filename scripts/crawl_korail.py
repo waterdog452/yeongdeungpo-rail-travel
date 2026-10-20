@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 DEST = ROOT / 'products.json'
-URL = 'https://www.korail.com/tour'
+URL = 'https://www.korail.com/tour/themeTravel/productPopularity'
 REGIONS = ('전라권','강원권','충청권','경상권','수도권','제주권')
 
 
